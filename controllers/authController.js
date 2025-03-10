@@ -40,4 +40,40 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+// Get all users
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, '-password'); // Exclude passwords from response
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Delete user by ID
+const deleteUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByIdAndDelete(id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Delete all users
+const deleteAllUsers = async (req, res) => {
+    try {
+        await User.deleteMany({});
+        res.status(200).json({ message: 'All users deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { registerUser, loginUser, getUsers, deleteUserById, deleteAllUsers };
